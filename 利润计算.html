@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>🍃 净利计算 · 简洁版</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: #f5f7fb;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 16px;
+    }
+
+    .calculator {
+      max-width: 520px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 32px;
+      box-shadow: 0 20px 40px rgba(0, 10, 30, 0.06), 0 6px 12px rgba(0, 0, 0, 0.03);
+      padding: 24px 22px 28px;
+      transition: all 0.2s;
+      border: 1px solid #f0f2f6;
+    }
+
+    h1 {
+      font-size: 1.9rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: #0b1b2f;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .subhead {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-bottom: 24px;
+      border-left: 4px solid #a5b4fc;
+      padding-left: 14px;
+      font-weight: 400;
+    }
+
+    .formula-hint {
+      background: #f8fafc;
+      padding: 12px 16px;
+      border-radius: 18px;
+      font-size: 0.8rem;
+      color: #334155;
+      margin-bottom: 24px;
+      border: 1px dashed #cbd5e1;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    .section-title {
+      font-weight: 600;
+      font-size: 1.2rem;
+      color: #1e293b;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title span {
+      background: #eef2ff;
+      padding: 4px 10px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      color: #4f46e5;
+    }
+
+    .card-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .input-group label {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #334155;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .input-group label .unit {
+      font-weight: 400;
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
+    .input-wrapper {
+      display: flex;
+      align-items: center;
+      background: #f9fafb;
+      border-radius: 20px;
+      padding: 4px 16px;
+      border: 1.5px solid #e2e8f0;
+      transition: border 0.15s, background 0.1s;
+    }
+    .input-wrapper:focus-within {
+      border-color: #818cf8;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
+    }
+
+    .input-wrapper .prefix {
+      color: #475569;
+      font-weight: 500;
+      margin-right: 6px;
+      font-size: 1rem;
+    }
+    .input-wrapper input {
+      width: 100%;
+      border: none;
+      background: transparent;
+      font-size: 1rem;
+      padding: 14px 0;
+      outline: none;
+      font-weight: 500;
+      color: #0f172a;
+    }
+    .input-wrapper input[type="number"] {
+      -moz-appearance: textfield;
+    }
+    .input-wrapper input::-webkit-outer-spin-button,
+    .input-wrapper input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .two-cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .divider {
+      margin: 8px 0 16px;
+      border-top: 1.5px solid #edf2f7;
+    }
+
+    .result-panel {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      border-radius: 24px;
+      padding: 22px 20px;
+      margin: 28px 0 18px;
+      color: white;
+      box-shadow: 0 12px 18px -8px rgba(15, 23, 42, 0.2);
+    }
+
+    .net-profit {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 16px;
+    }
+    .net-profit-label {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      opacity: 0.7;
+    }
+    .net-profit-value {
+      font-size: 3.2rem;
+      font-weight: 700;
+      line-height: 1.1;
+      word-break: break-word;
+    }
+
+    .detail-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      font-size: 1rem;
+    }
+    .detail-row:last-of-type {
+      border-bottom: none;
+    }
+    .detail-label {
+      opacity: 0.8;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .detail-value {
+      font-weight: 600;
+      font-size: 1.15rem;
+    }
+
+    .button-primary {
+      background: #4f46e5;
+      color: white;
+      border: none;
+      width: 100%;
+      padding: 18px 16px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      border-radius: 60px;
+      cursor: pointer;
+      transition: 0.2s;
+      box-shadow: 0 8px 16px -6px rgba(79, 70, 229, 0.3);
+      margin-bottom: 10px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .button-primary:hover {
+      background: #4338ca;
+      transform: scale(0.99);
+    }
+    .button-primary:active {
+      background: #3730a3;
+      box-shadow: 0 4px 8px -4px #312e81;
+    }
+
+    .footnote {
+      font-size: 0.75rem;
+      color: #64748b;
+      text-align: center;
+      margin-top: 6px;
+    }
+
+    /* 手机优化 */
+    @media (max-width: 400px) {
+      .calculator { padding: 20px 16px; }
+      h1 { font-size: 1.7rem; }
+      .two-cols { gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+<div class="calculator">
+  <h1>📊 净利计算</h1>
+  <div class="subhead">四块构成 · 即时月净利润</div>
+  
+  <div class="formula-hint">
+    ⚡ 公式: ((支付金额*(1-退货率))*(利润率-抽成) - (支付*(1-退货率)*(1-抽成))*税率 - 打包件数*(运费+打包费)) * 当月天数 - 员工工资 - 水电网络 - 其他费用
+  </div>
+
+  <!-- 输入区 -->
+  <div class="section-title">
+    📋 日基础数据 <span>每日维度</span>
+  </div>
+  <div class="card-grid">
+    <!-- 第一行: 直播间支付 & 退货率 -->
+    <div class="two-cols">
+      <div class="input-group">
+        <label>💰 直播间支付 <span class="unit">元/日</span></label>
+        <div class="input-wrapper">
+          <span class="prefix">¥</span>
+          <input type="number" id="payment" value="32000" step="100" min="0" placeholder="支付金额">
+        </div>
+      </div>
+      <div class="input-group">
+        <label>↩️ 退货率 <span class="unit">%</span></label>
+        <div class="input-wrapper">
+          <input type="number" id="returnRate" value="50" step="0.1" min="0" max="100" placeholder="15">
+          <span class="prefix" style="margin-left:4px">%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 第二行: 利润率 & 平台抽成 -->
+    <div class="two-cols">
+      <div class="input-group">
+        <label>📈 利润率 <span class="unit">%</span></label>
+        <div class="input-wrapper">
+          <input type="number" id="profitMargin" value="40" step="0.5" min="0" max="100" placeholder="32">
+          <span class="prefix" style="margin-left:4px">%</span>
+        </div>
+      </div>
+      <div class="input-group">
+        <label>🛍️ 平台抽成 <span class="unit">%</span></label>
+        <div class="input-wrapper">
+          <input type="number" id="platformFee" value="5" step="0.1" min="0" max="100" placeholder="5">
+          <span class="prefix" style="margin-left:4px">%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 第三行: 税率 -->
+    <div class="input-group">
+      <label>🧾 税率 (综合) <span class="unit">%</span></label>
+      <div class="input-wrapper">
+        <input type="number" id="taxRate" value="3" step="0.1" min="0" max="100" placeholder="3">
+        <span class="prefix" style="margin-left:4px">%</span>
+      </div>
+    </div>
+
+    <!-- 打包相关: 打包件数, 运费/件, 打包费/件 -->
+    <div class="section-title" style="margin-top: 8px;">
+      📦 日打包 & 运费
+    </div>
+    <div class="two-cols">
+      <div class="input-group">
+        <label>📦 打包件数 <span class="unit">件/日</span></label>
+        <div class="input-wrapper">
+          <input type="number" id="packageQty" value="220" step="1" min="0" placeholder="件数">
+        </div>
+      </div>
+      <div class="input-group">
+        <label>🚚 单件运费 <span class="unit">元</span></label>
+        <div class="input-wrapper">
+          <span class="prefix">¥</span>
+          <input type="number" id="shippingCost" value="2.5" step="0.1" min="0" placeholder="3.8">
+        </div>
+      </div>
+    </div>
+    <div class="input-group">
+      <label>📐 单件打包费 <span class="unit">元</span></label>
+      <div class="input-wrapper">
+        <span class="prefix">¥</span>
+        <input type="number" id="packingFee" value="1" step="0.1" min="0" placeholder="1.2">
+      </div>
+    </div>
+
+    <!-- 月固定费用 -->
+    <div class="section-title" style="margin-top: 8px;">
+      🗓️ 其他月费 & 天数
+    </div>
+    <div class="two-cols">
+      <div class="input-group">
+        <label>👥 员工总工资 <span class="unit">元/月</span></label>
+        <div class="input-wrapper">
+          <span class="prefix">¥</span>
+          <input type="number" id="salary" value="34000" step="500" min="0">
+        </div>
+      </div>
+      <div class="input-group">
+        <label>💡 水电网络 <span class="unit">元/月</span></label>
+        <div class="input-wrapper">
+          <span class="prefix">¥</span>
+          <input type="number" id="utilities" value="1800" step="100" min="0">
+        </div>
+      </div>
+    </div>
+    <div class="two-cols">
+      <div class="input-group">
+        <label>📋 其他费用 <span class="unit">元/月</span></label>
+        <div class="input-wrapper">
+          <span class="prefix">¥</span>
+          <input type="number" id="otherCost" value="1200" step="100" min="0">
+        </div>
+      </div>
+      <div class="input-group">
+        <label>📅 当月天数</label>
+        <div class="input-wrapper">
+          <input type="number" id="daysInMonth" value="30" step="1" min="1" max="31">
+          <span class="prefix" style="margin-left:4px">天</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 计算按钮 -->
+  <button class="button-primary" id="calcBtn">✨ 计算净利润</button>
+
+  <!-- 结果展示区 -->
+  <div class="result-panel" id="resultPanel">
+    <div class="net-profit">
+      <div class="net-profit-label">月净利润</div>
+      <div class="net-profit-value" id="netProfitDisplay">¥0</div>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">📆 月税收</span>
+      <span class="detail-value" id="monthlyTaxDisplay">¥0</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">📦 月打包费</span>
+      <span class="detail-value" id="monthlyPackingDisplay">¥0</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-label">🚛 月运费</span>
+      <span class="detail-value" id="monthlyShippingDisplay">¥0</span>
+    </div>
+  </div>
+  <div class="footnote">
+    * 税收基于“应税收入 = 支付*(1-退货率)*(1-平台抽成)”
+  </div>
+</div>
+
+<script>
+  (function(){
+    "use strict";
+
+    // DOM 元素
+    const paymentInput = document.getElementById('payment');
+    const returnRateInput = document.getElementById('returnRate');
+    const profitMarginInput = document.getElementById('profitMargin');
+    const platformFeeInput = document.getElementById('platformFee');
+    const taxRateInput = document.getElementById('taxRate');
+    const packageQtyInput = document.getElementById('packageQty');
+    const shippingCostInput = document.getElementById('shippingCost');
+    const packingFeeInput = document.getElementById('packingFee');
+    const salaryInput = document.getElementById('salary');
+    const utilitiesInput = document.getElementById('utilities');
+    const otherCostInput = document.getElementById('otherCost');
+    const daysInput = document.getElementById('daysInMonth');
+
+    // 结果显示
+    const netProfitDisplay = document.getElementById('netProfitDisplay');
+    const monthlyTaxDisplay = document.getElementById('monthlyTaxDisplay');
+    const monthlyPackingDisplay = document.getElementById('monthlyPackingDisplay');
+    const monthlyShippingDisplay = document.getElementById('monthlyShippingDisplay');
+
+    const calcBtn = document.getElementById('calcBtn');
+
+    // 通用取值函数 (处理空值)
+    function getFloat(id) {
+      const el = document.getElementById(id);
+      let val = parseFloat(el.value);
+      return isNaN(val) ? 0 : val;
+    }
+
+    // 核心计算
+    function calculate() {
+      // 1. 读取所有原始值
+      const payment = getFloat('payment');                     // 日支付金额
+      const returnRatePercent = getFloat('returnRate');        // 退货率 (%)
+      const profitMarginPercent = getFloat('profitMargin');    // 利润率 (%)
+      const platformPercent = getFloat('platformFee');         // 平台抽成 (%)
+      const taxRatePercent = getFloat('taxRate');              // 税率 (%)
+
+      const packageQty = getFloat('packageQty');               // 日打包件数
+      const shippingPerUnit = getFloat('shippingCost');        // 单件运费
+      const packingPerUnit = getFloat('packingFee');           // 单件打包费
+
+      const salary = getFloat('salary');                       // 月工资
+      const utilities = getFloat('utilities');                 // 月水电网络
+      const otherCost = getFloat('otherCost');                 // 月其他
+      const days = getFloat('daysInMonth');                    // 当月天数
+
+      // 2. 转换百分比为小数 (除以100)
+      const returnRate = returnRatePercent / 100;
+      const profitMargin = profitMarginPercent / 100;
+      const platformFee = platformPercent / 100;
+      const taxRate = taxRatePercent / 100;
+
+      // 3. 有效收入 (日) = 支付金额 * (1 - 退货率)
+      const effectiveRevenue = payment * (1 - returnRate);
+
+      // 4. 日利润部分 (不含税、不含打包运费) —— 对应公式第一部分:
+      //    (直播间支付金额*(1-退货率)) * (利润率 - 平台抽成)
+      const dailyProfitBeforeTaxAndPack = effectiveRevenue * (profitMargin - platformFee);
+
+      // 5. 日税收 = (有效收入 * (1 - 平台抽成)) * 税率
+      //    注意：应税基数 = 支付金额*(1-退货率)*(1-平台抽成)
+      const taxableBase = effectiveRevenue * (1 - platformFee);
+      const dailyTax = taxableBase * taxRate;
+
+      // 6. 日打包运费 = 打包件数 * (运费 + 打包费用)
+      const dailyPackAndShip = packageQty * (shippingPerUnit + packingPerUnit);
+
+      // 7. 日净利润 (未扣除月固定费) = 日利润部分 - 日税收 - 日打包运费
+      const dailyNetBeforeFixed = dailyProfitBeforeTaxAndPack - dailyTax - dailyPackAndShip;
+
+      // 8. 月净利润 = 日净利润 * 当月天数 - 员工工资 - 水电网络 - 其他费用
+      const monthlyNet = dailyNetBeforeFixed * days - salary - utilities - otherCost;
+
+      // 9. 单独列出需要的月税收、月打包费、月运费 (仅用于展示)
+      const monthlyTax = dailyTax * days;
+      const monthlyPacking = packageQty * packingPerUnit * days;      // 打包费
+      const monthlyShipping = packageQty * shippingPerUnit * days;    // 运费
+
+      // 10. 更新UI
+      netProfitDisplay.textContent = formatCurrency(monthlyNet);
+      monthlyTaxDisplay.textContent = formatCurrency(monthlyTax);
+      monthlyPackingDisplay.textContent = formatCurrency(monthlyPacking);
+      monthlyShippingDisplay.textContent = formatCurrency(monthlyShipping);
+    }
+
+    // 格式化货币 (保留两位小数，加千分位)
+    function formatCurrency(value) {
+      // 处理极小负零
+      const rounded = Math.round(value * 100) / 100;
+      const sign = rounded < 0 ? '-' : '';
+      const absValue = Math.abs(rounded);
+      const parts = absValue.toFixed(2).split('.');
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      return sign + '¥' + parts.join('.');
+    }
+
+    // 绑定点击事件
+    calcBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      calculate();
+    });
+
+    // 附加：为所有输入增加回车触发计算（手机键盘上“前往”类似）
+    const allInputs = [
+      paymentInput, returnRateInput, profitMarginInput, platformFeeInput,
+      taxRateInput, packageQtyInput, shippingCostInput, packingFeeInput,
+      salaryInput, utilitiesInput, otherCostInput, daysInput
+    ];
+    allInputs.forEach(input => {
+      input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          calculate();
+          input.blur();
+        }
+      });
+    });
+
+    // 页面加载后立即计算一次，展示默认值结果
+    window.addEventListener('DOMContentLoaded', () => {
+      // 确保默认值都已填入
+      calculate();
+    });
+
+    // 可选: 当输入框失去焦点时，也可自动计算 (为了体验更流畅)
+    // 但为避免过于频繁，保留按钮为主，但为了便捷可以加blur？用户习惯可能不同，保留按钮主导，但加一个额外自动计算?
+    // 为了更顺手，增加“实时计算”倾向？我可以在点击按钮之外，也可以输入后自动更新？但是尊重设计——点击计算，所以只保留按钮。
+    // 但如果用户希望更改后直接计算，可去掉注释。为了界面简洁，我仅保留按钮。
+    // 增加一个额外的优化：双击空白或点击结果面板也可以刷新？没必要。
+    // 符合要求：点击计算，列出所需。
+  })();
+</script>
+</body>
+</html>
